@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+{% block title %}Unified Viewer{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="//golden-layout.com/assets/css/goldenlayout-base.css">
+<link rel="stylesheet" href="//golden-layout.com/assets/css/goldenlayout-dark-theme.css">
+<script src="//golden-layout.com/assets/js/goldenlayout.min.js"></script>
+<style>
+    html, body {
+        margin: 0;
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+    }
+
+    #layout-container {
+        width: 100vw;
+        height: 100vh;
+    }
+
+    .gl-selector-panel {
+        height: 100%;
+        overflow-y: auto;
+        box-sizing: border-box;
+        padding: 6px;
+        max-width: 155px;
+    }
+
+    .gl-selector-panel button {
+        width: 100%;
+        margin-bottom: 1px;
+        font-size: 10px;
+        padding: 2px 4px;
+    }
+
+    .gl-viewer-wrapper {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .lm_column .lm_container:first-child {
+        flex-basis: 155px !important;
+        max-width: 155px !important;
+    }
+
+    .lm_content {
+        min-width: 0 !important;
+        min-height: 0 !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="layout-container"></div>
+{% endblock %}
+
+{% block scripts %}
+<script type="module">
+import { Viewer } from "/static/js/viewer.js";
+
+const videoExt = ['.mp4', '.webm','.rtsp','.avi','.h264'];
+const imageExt = ['.jpg', '.jpeg', '.png', '.gif'];
+
+function getExt(name) {
+  return name.slice(name.lastIndexOf('.')).toLowerCase();
+}
+function isWebRTC(name) { return videoExt.includes(getExt(name)); }
+function isImageFile(name) { return imageExt.includes(getExt(name)); }
+
+let layout;
+const activeViewers = new Set();
+
+function SelectorComponent(container) {
+  const el = document.createElement("div");
+  el.className = "gl-selector-panel";
+
+  fetch('/api/imagery/list')
+    .then(res => res.json())
+    .then(files => {
+      files.forEach(filename => {
+        const btn = document.createElement("button");
+        btn.textContent = filename;
+        btn.className = "btn btn-sm btn-secondary";
+        btn.onclick = () => openMediaViewer(filename);
+        el.appendChild(btn);
+      });
+    });
+
+  container.getElement().append(el);
+}
+
+function ViewerComponent(container, state) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "gl-viewer-wrapper";
+  container.getElement().append(wrapper);
+
+  let media;
+
+  if (state.mediaType === "photo") {
+    media = new Image();
+    media.src = state.src;
+  } else {
+    media = document.createElement("video");
+    media.controls = true;
+    media.autoplay = true;
+    media.muted = true;
+    media.playsInline = true;
+    if (state.mediaType === "file") {
+      media.src = state.src;
+    }
+  }
+
+  const viewer = new Viewer({
+    container: wrapper,
+    media: media,
+    id: state.name,
+    webrtc: state.mediaType !== "photo",
+    onMark: data => {
+      fetch("/api/mark", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ shape: "point", ...data })
+      }).then(r => r.json()).then(res => console.log("Marked:", res));
+    }
+  });
+
+  if (typeof viewer.resize === "function") {
+    activeViewers.add(viewer);
+  }
+}
+
+
+function openMediaViewer(name) {
+  fetch(`/api/imagery/path/${name}`)
+    .then(r => r.json())
+    .then(info => {
+      const stack = layout.root.contentItems[0].contentItems[1];
+      stack.addChild({
+        type: 'component',
+        componentName: 'viewer',
+        componentState: {
+          name: name,
+          src: info.path,
+          mediaType: info.type
+        },
+        title: name
+      });
+    });
+}
+
+
+layout = new GoldenLayout({
+  content: [{
+    type: 'row',
+    content: [
+      {
+        type: 'component',
+        componentName: 'selector',
+        componentState: {},
+        isClosable: false,
+        width: 15,       
+        minWidth: 5,      
+        maxWidth: 20,
+        id: "selector"
+      },
+      {
+        type: 'stack',
+        content: [],
+        isClosable: false
+      }
+    ]
+  }]
+}, document.getElementById('layout-container'));
+
+layout.registerComponent('selector', SelectorComponent);
+layout.registerComponent('viewer', ViewerComponent);
+layout.init();
+
+// 🔁 Resize awareness
+const layoutContainer = document.getElementById('layout-container');
+if (window.ResizeObserver) {
+  new ResizeObserver(() => {
+    layout.updateSize();
+    activeViewers.forEach(v => v.resize?.());
+  }).observe(layoutContainer);
+} else {
+  window.addEventListener('resize', () => {
+    layout.updateSize();
+    activeViewers.forEach(v => v.resize?.());
+  });
+}
+
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) {
+    setTimeout(() => {
+      layout.updateSize();
+      activeViewers.forEach(v => v.resize?.());
+    }, 50);
+  }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,546 @@
+{% extends "base.html" %}
+{% block title %}Simple Map/Viewer Layout{% endblock %}
+
+{% block head %}
+<!-- VIEWPORT META TAG - CRITICAL FOR MOBILE -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<!-- GoldenLayout CSS/JS -->
+<!-- Using jQuery is often assumed by GL examples, ensure it's loaded if needed -->
+<!-- <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script> -->
+<link rel="stylesheet" href="https://golden-layout.com/assets/css/goldenlayout-base.css" />
+<link rel="stylesheet" href="https://golden-layout.com/assets/css/goldenlayout-dark-theme.css" />
+<script src="https://golden-layout.com/assets/js/goldenlayout.min.js"></script>
+
+<!-- Leaflet CSS/JS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+{# Bootstrap/FA inherited from base.html - Needed for btn styling if used #}
+<!-- If using Bootstrap buttons -->
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"> -->
+<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" /> -->
+
+
+<style>
+  /* --- ABSOLUTE MINIMUM STYLING --- */
+  html, body {
+    margin: 0; padding: 0;
+    height: 100%; width: 100%;
+    overflow: hidden; /* Prevent body scrollbars */
+    font-family: sans-serif;
+    background-color: #1e1e1e; /* Basic dark background */
+  }
+  #layout-container {
+    width: 100%; height: 100%;
+  }
+
+  /* Let GoldenLayout handle panel sizing and layout */
+  /* Minimal override for content background */
+   .lm_content {
+     background-color: #2a2a2a;
+     overflow: hidden !important; /* Ensure GL content area doesn't scroll */
+   }
+
+  /* Style for the map div *inside* the component */
+  .map-container-inner {
+      width: 100%; height: 100%;
+      background-color: #ddd; /* Light bg for map */
+  }
+
+  /* Style for the viewer div *inside* the component */
+  .viewer-container-inner {
+      width: 100%; height: 100%;
+      overflow: hidden; /* Crucial for viewer */
+      background-color: #111; /* Dark bg for viewer */
+      display: flex; /* Allow media element to fill */
+      align-items: center;
+      justify-content: center;
+  }
+  .viewer-container-inner img,
+  .viewer-container-inner video,
+  .viewer-container-inner canvas {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      display: block;
+  }
+
+  /* --- Optional: Basic Toolbar Styling (if added INSIDE components) --- */
+  .component-internal-toolbar {
+      position: absolute;
+      bottom: 0; left: 0; width: 100%;
+      padding: 4px 6px;
+      background-color: rgba(40, 40, 40, 0.8); /* Semi-transparent dark */
+      border-top: 1px solid #555;
+      z-index: 1000; /* Above map/viewer */
+      display: flex;
+      gap: 5px;
+      box-sizing: border-box;
+      height: 34px; /* Match previous attempts */
+  }
+   .component-internal-toolbar .btn {
+     /* Use Bootstrap classes if available, otherwise basic style */
+     padding: 2px 8px; font-size: 0.8em;
+     background-color: #555; color: white; border: 1px solid #777;
+     cursor: pointer; white-space: nowrap;
+   }
+    .component-internal-toolbar .btn:hover { background-color: #777; }
+    .component-internal-toolbar .btn-group { display: flex; gap: inherit; }
+
+   /* --- Minimal Leaflet Popup Styling --- */
+   .popup-button { margin-top: 5px; cursor: pointer; display: block; width: fit-content; margin: 5px auto 0 auto; }
+   .leaflet-popup-content-wrapper { border-radius: 3px; background: #333; color: #ccc; }
+   .leaflet-popup-content { margin: 8px !important; font-size: 0.9rem; min-width: 150px; text-align: center;}
+   .leaflet-popup-content strong { display: block; margin-bottom: 4px; font-size: 1em; }
+   .leaflet-popup-tip { background: #333; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="layout-container"></div>
+{% endblock %}
+
+{% block scripts %}
+<script type="module">
+import { Viewer } from "/static/js/viewer.js"; // Adjust path if needed
+
+// Globals
+let layout;
+const activeViewers = new Map();
+let leafletMapInstance = null; // Keep track of the single map instance
+
+// ===== Utility: Create Basic Button (if Bootstrap not used/available reliably) =====
+function createBasicButton(text, onClick, title = '') {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'btn'; // Basic class for styling hook
+    btn.textContent = text;
+    if (title) btn.title = title;
+    if (onClick) btn.addEventListener('click', onClick);
+    return btn;
+}
+// ===== Utility: Create Button Group =====
+function createButtonGroup() {
+    const group = document.createElement('div');
+    group.className = 'btn-group';
+    return group;
+}
+
+
+// ===== 1. Map Component =====
+function MapComponent(container, componentState) {
+    const glElement = container.getElement(); // This is the jQuery element from GL
+    const componentRoot = glElement[0]; // Get the raw DOM element
+
+    // Create the div *inside* the GL container where the map will live
+    const mapDiv = document.createElement('div');
+    mapDiv.className = 'map-container-inner'; // Use simple class for styling
+    componentRoot.appendChild(mapDiv);
+
+    // Optional: Create a toolbar div *inside* the componentRoot
+    const toolbarDiv = document.createElement('div');
+    toolbarDiv.className = 'component-internal-toolbar';
+    // Initially hide or don't append until map is ready? Let's append it.
+    componentRoot.appendChild(toolbarDiv);
+
+    let map = null; // Local map instance for this component
+
+    const initMap = () => {
+        // Ensure div is ready
+        if (!mapDiv.isConnected || mapDiv.offsetWidth <= 0 || mapDiv.offsetHeight <= 0) {
+            console.warn("Map div not ready, retrying init...");
+            setTimeout(initMap, 150);
+            return;
+        }
+        try {
+            // If a global instance exists (e.g., from a failed previous init), remove it.
+            if (leafletMapInstance) leafletMapInstance.remove();
+
+            map = L.map(mapDiv, { zoomControl: false }).setView([0, 0], 2);
+            leafletMapInstance = map; // Assign to global tracker
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OSM', maxZoom: 18 }).addTo(map);
+            L.control.zoom({ position: 'topleft' }).addTo(map);
+
+            console.log("MapComponent: Leaflet Initialized.");
+            populateMapToolbarInternal(toolbarDiv, map); // Populate internal toolbar
+            loadMapMarkersInternal(map); // Load markers
+
+            // Initial size check
+            setTimeout(() => map?.invalidateSize(true), 50);
+
+        } catch (e) {
+            console.error("Map Init Error:", e);
+            mapDiv.innerHTML = "Map failed to load.";
+            toolbarDiv.innerHTML = "Controls unavailable"; // Clear toolbar too
+        }
+    };
+
+    // Start initialization
+    requestAnimationFrame(() => setTimeout(initMap, 50));
+
+    // GoldenLayout Event Listeners
+    container.on('resize', () => {
+        // Debounce resize slightly
+        setTimeout(() => map?.invalidateSize({ debounceMoveend: true }), 50);
+    });
+
+    container.on('destroy', () => {
+        console.log("MapComponent: Destroying...");
+        if (map) {
+            map.remove();
+            map = null;
+        }
+        if (leafletMapInstance === map) {
+             leafletMapInstance = null; // Clear global ref if it was this map
+        }
+    });
+}
+
+// --- Internal Map Helpers ---
+function populateMapToolbarInternal(toolbarElement, mapInstance) {
+    toolbarElement.innerHTML = ''; // Clear previous
+    toolbarElement.appendChild(createBasicButton("Layers", () => alert('Layers Action'), 'Manage Layers'));
+    const group1 = createButtonGroup();
+    group1.appendChild(createBasicButton("Draw", () => alert('Draw Action'), 'Draw Shapes'));
+    group1.appendChild(createBasicButton("Measure", () => alert('Measure Action'), 'Measure Distance/Area'));
+    toolbarElement.appendChild(group1);
+    toolbarElement.appendChild(createBasicButton("Clear", () => { if(confirm('Clear map drawings?')) alert('Clear Action'); }, 'Clear Drawings'));
+}
+
+function loadMapMarkersInternal(map) {
+    if (!map) return;
+    fetch('/api/imagery/list')
+        .then(res => res.ok ? res.json() : Promise.reject(`List fetch failed: ${res.status}`))
+        .then(files => {
+            files?.forEach(filename => {
+                fetch(`/api/imagery/path/${filename}`)
+                    .then(res => res.ok ? res.json() : Promise.reject(`Path fetch failed for ${filename}`))
+                    .then(info => {
+                        console.log("Img Info:",info);
+                        if (info.latlon?.length === 2) {
+                            const marker = L.marker(info.latlon).addTo(map);
+                            const popupContent = document.createElement('div');
+                            popupContent.innerHTML = `<strong>${filename}</strong><br><span>Hdg: ${info.hdg || 'N/A'}</span>`;
+                            const viewBtn = createBasicButton("View", (e) => { e.stopPropagation(); openMediaViewer(filename); });
+                            viewBtn.classList.add('popup-button'); // Add class for specific styling if needed
+                            popupContent.appendChild(viewBtn);
+                            marker.bindPopup(popupContent, { minWidth: 160 });
+                        }
+                    }).catch(err => console.warn(`Marker error ${filename}:`, err));
+            });
+        })
+        .catch(err => console.error("Failed to load map markers:", err));
+}
+
+
+// ===== 2. Viewer Component =====
+function ViewerComponent(container, componentState) {
+    const viewerId = componentState?.name || `viewer-${Date.now()}`; // Need an ID
+    console.log(`ViewerComponent: Creating for ID: ${viewerId}`);
+
+    const glElement = container.getElement();
+    const componentRoot = glElement[0];
+
+    // Create the div *inside* the GL container for the viewer
+    const viewerWrapper = document.createElement('div');
+    viewerWrapper.className = 'viewer-container-inner';
+    componentRoot.appendChild(viewerWrapper);
+
+    // Optional: Create an internal toolbar
+    const toolbarDiv = document.createElement('div');
+    toolbarDiv.className = 'component-internal-toolbar';
+    componentRoot.appendChild(toolbarDiv);
+
+    let viewer = null; // Local viewer instance
+    let media = null;  // Local media element
+
+    const initViewer = () => {
+        if (!componentState?.name || !componentState?.src) {
+            console.error(`ViewerComponent ${viewerId}: Invalid state`, componentState);
+            viewerWrapper.innerHTML = "Error: Invalid viewer state.";
+            toolbarDiv.innerHTML = "";
+            return;
+        }
+
+        // Ensure wrapper is ready
+        if (!viewerWrapper.isConnected || viewerWrapper.offsetWidth <= 0 || viewerWrapper.offsetHeight <= 0) {
+            console.warn(`Viewer wrapper ${viewerId} not ready, retrying init...`);
+            setTimeout(initViewer, 150);
+            return;
+        }
+
+        try {
+            // Create media element based on state
+            if (componentState.mediaType === "photo") {
+                media = new Image();
+                media.src = componentState.src;
+                media.alt = viewerId;
+                // Viewer.js will typically handle appending/managing the image
+            } else { // Video or Stream
+                media = document.createElement("video");
+                media.controls = false; // Use custom controls if needed via toolbar
+                media.autoplay = true; media.muted = true; media.playsInline = true;
+                media.onerror = (e) => console.error(`Video Error (${viewerId}):`, e);
+                if (componentState.mediaType === 'file' || !componentState.webrtc) {
+                    media.src = componentState.src;
+                }
+                 // Important: Viewer.js usually expects the container, not the media to be appended initially
+                // Let Viewer.js handle putting the media inside viewerWrapper
+            }
+
+            console.log(`ViewerComponent ${viewerId}: Initializing Viewer.js...`);
+            viewer = new Viewer({
+                container: viewerWrapper, // The div created above
+                media: media,             // The image or video element
+                id: viewerId,
+                webrtc: componentState.mediaType !== "photo" && componentState.mediaType !== 'file',
+                onMark: data => saveMarkDataInternal(viewerId, data)
+            });
+
+            if (!viewer?.isInitialized) {
+                throw new Error("Viewer.js initialization method failed or returned false.");
+            }
+
+            activeViewers.set(viewerId, viewer); // Track active viewer
+            populateViewerToolbarInternal(toolbarDiv, viewer); // Populate internal toolbar
+            console.log(`ViewerComponent ${viewerId}: Initialized successfully.`);
+
+            // Initial resize call
+            if (typeof viewer.resize === 'function') {
+                setTimeout(() => viewer.resize(), 50);
+            }
+
+        } catch (e) {
+            console.error(`Viewer Init Error (${viewerId}):`, e);
+            viewerWrapper.innerHTML = `Error loading viewer: ${viewerId}`;
+            toolbarDiv.innerHTML = "";
+            // Clean up potentially failed viewer instance
+            if (viewer && typeof viewer.destroy === 'function') viewer.destroy();
+            if (media && media.parentNode) media.parentNode.removeChild(media);
+            activeViewers.delete(viewerId); // Ensure it's not tracked
+            viewer = null;
+            media = null;
+        }
+    };
+
+    // Start initialization
+    requestAnimationFrame(() => setTimeout(initViewer, 50));
+
+    // GoldenLayout Event Listeners
+    container.on('resize', () => {
+        if (viewer && typeof viewer.resize === 'function') {
+            setTimeout(() => viewer.resize(), 50); // Debounce/delay
+        }
+    });
+
+    container.on('destroy', () => {
+        console.log(`ViewerComponent: Destroying ${viewerId}...`);
+        activeViewers.delete(viewerId); // Remove from tracking
+        if (viewer && typeof viewer.destroy === 'function') {
+            viewer.destroy();
+        } else if (media?.parentNode) {
+            // Manual cleanup if destroy wasn't available or failed
+            media.parentNode.removeChild(media);
+        }
+        viewer = null;
+        media = null;
+    });
+}
+
+// --- Internal Viewer Helpers ---
+function populateViewerToolbarInternal(toolbarElement, viewerInstance) {
+    toolbarElement.innerHTML = ''; // Clear previous
+    if (!viewerInstance?.isInitialized) { toolbarElement.textContent = "Controls unavailable."; return; }
+
+    toolbarElement.appendChild(createBasicButton("Mark", () => {
+        const point = viewerInstance.mark?.(); // Use optional chaining
+        if (point && typeof viewerInstance.onMark === 'function') {
+            viewerInstance.onMark(point);
+        } else if (!point) {
+            console.log("Viewer: Mark requires click first.");
+        }
+    }, 'Mark Point'));
+
+    const group1 = createButtonGroup();
+    const zoomInFn = () => viewerInstance.zoomIn ? viewerInstance.zoomIn() : (viewerInstance.zoom = (viewerInstance.zoom || 1.0) * 1.2);
+    const zoomOutFn = () => viewerInstance.zoomOut ? viewerInstance.zoomOut() : (viewerInstance.zoom = (viewerInstance.zoom || 1.0) / 1.2);
+    const resetFn = () => viewerInstance.resetView ? viewerInstance.resetView() : Object.assign(viewerInstance, { zoom: 1.0, panX: 0.5, panY: 0.5, lastClick: null });
+    group1.appendChild(createBasicButton("+", zoomInFn, 'Zoom In'));
+    group1.appendChild(createBasicButton("-", zoomOutFn, 'Zoom Out'));
+    group1.appendChild(createBasicButton("Reset", resetFn, 'Reset View'));
+    toolbarElement.appendChild(group1);
+
+    // Video Controls if applicable
+    if (viewerInstance.media instanceof HTMLVideoElement) {
+        const video = viewerInstance.media;
+        const btn = createBasicButton(video.paused ? 'Play' : 'Pause', () => { video.paused ? video.play().catch(console.error) : video.pause(); }, 'Play/Pause');
+        video.onplay = () => { btn.textContent = 'Pause'; };
+        video.onpause = () => { btn.textContent = 'Play'; };
+        toolbarElement.appendChild(btn);
+    }
+}
+
+function saveMarkDataInternal(sourceId, markData) {
+    console.log(`Saving mark for ${sourceId}:`, markData);
+    fetch("/api/mark", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ shape: "point", source_id: sourceId, ...markData })
+    })
+    .then(r => r.ok ? r.json() : Promise.reject(`Mark save failed: ${r.status}`))
+    .then(res => console.log("Mark saved:", res))
+    .catch(err => console.error("Mark save error:", err));
+}
+
+
+// ===== 3. Function to Add Viewer to Stack =====
+function openMediaViewer(filename) {
+    if (!layout?.isInitialised) { console.error("Layout not ready."); return; }
+    // Find the stack - Adjust index if layout changes
+    const stack = layout.root?.contentItems?.[0]?.contentItems?.[1]; // Assumes Row -> [Map(0), Stack(1)]
+
+    if (!stack || stack.type !== 'stack') {
+        console.error("Could not find viewer stack component.");
+        alert("Error: Viewer panel not found.");
+        return;
+    }
+
+    // Check if already open
+    if (activeViewers.has(filename)) {
+        console.log(`Viewer ${filename} already open. Focusing.`);
+        const item = stack.contentItems.find(ci => ci.config?.componentState?.name === filename);
+        if (item) { stack.setActiveContentItem(item); }
+        else { console.warn(`Viewer ${filename} is active but couldn't find its tab?`); }
+        return;
+    }
+
+    console.log(`Opening viewer for: ${filename}`);
+    fetch(`/api/imagery/path/${filename}`)
+        .then(r => r.ok ? r.json() : Promise.reject(`Path fetch failed ${filename}: ${r.status}`))
+        .then(info => {
+            const isWebRTC = info.type !== "photo" && info.type !== 'file';
+            const viewerConfig = {
+                type: 'component',
+                componentName: 'viewerComponent', // Use the name registered below
+                componentState: { name: filename, src: info.path, mediaType: info.type, webrtc: isWebRTC },
+                title: filename.substring(0, 15) + (filename.length > 15 ? '...' : ''),
+                isClosable: true
+            };
+
+            console.log("Adding child to stack with config:", viewerConfig);
+            stack.addChild(viewerConfig);
+        })
+        .catch(err => {
+            console.error(`Error opening viewer for ${filename}:`, err);
+            alert(`Could not load info for ${filename}.`);
+        });
+}
+
+// ===== 4. GoldenLayout Configuration (Simple Row) =====
+const config = {
+  settings:{
+    hasHeaders: true, // Need headers for tabs in the stack
+    showCloseIcon: true,
+    showPopoutIcon: false, // Simplification
+    showMaximiseIcon: true,
+  },
+  dimensions: {
+      borderWidth: 4,
+      minItemHeight: 100, // Low value for mobile flexibility
+      minItemWidth: 120,  // Low value for mobile flexibility
+      headerHeight: 24    // Standard header height
+  },
+  content: [{
+    type: 'row',
+    content: [
+      // Column 1: Map
+      {
+        type:'component',
+        componentName: 'mapComponent', // Registered name
+        componentState: {}, // No specific initial state needed
+        title: 'Map',
+        isClosable: false,
+        width: 50 // Adjust % width as desired (e.g., 40)
+      },
+      // Column 2: Stack for Viewers
+      {
+        type:'stack',
+        id: 'viewerStack', // Assign ID for easy targeting
+        isClosable: false,
+        width: 50, // Adjust % width (e.g., 60)
+        content: [
+            // Optionally add a placeholder component initially?
+            /* {
+                type: 'component', componentName: 'placeholderComponent', title: 'Viewers'
+            } */
+        ]
+      },
+    ]
+  }]
+};
+
+// ===== 5. Placeholder Component (Optional) =====
+function PlaceholderComponent(container, state) {
+    container.getElement().html('<div style="padding: 15px; color: #aaa; text-align: center;">Click a marker on the map to view imagery here.</div>');
+}
+
+
+// ===== 6. Initialization =====
+try {
+    console.log("Initializing GoldenLayout...");
+    const layoutContainer = document.getElementById('layout-container');
+    if (!layoutContainer) throw new Error("#layout-container missing!");
+
+    layout = new GoldenLayout( config, layoutContainer );
+
+    // Register the components
+    layout.registerComponent( 'mapComponent', MapComponent );
+    layout.registerComponent( 'viewerComponent', ViewerComponent );
+    // layout.registerComponent( 'placeholderComponent', PlaceholderComponent ); // Uncomment if using placeholder
+
+    layout.init();
+    console.log("GoldenLayout Initialized.");
+
+} catch (error) {
+    console.error("CRITICAL GoldenLayout Init Error:", error);
+    document.body.innerHTML = `<div style="padding:10px; color:red; background:#111; border:2px solid red;"><h1>Layout Init Failed</h1><pre>${error.stack || error}</pre>Check console.</div>`;
+}
+
+
+// ===== 7. Resize Handling =====
+const debounce = (func, wait) => {
+    let timeout; return (...args) => { clearTimeout(timeout); timeout = setTimeout(() => func.apply(this, args), wait); };
+};
+
+const updateLayoutSize = debounce(() => {
+    if (layout?.isInitialised) {
+        console.log("Updating layout size..."); // Log resize trigger
+        layout.updateSize();
+        // Resizing components is now handled by their internal listeners ('container.on('resize')')
+    }
+}, 250); // 250ms debounce
+
+// Use ResizeObserver for reliable container resize detection
+const layoutElement = document.getElementById('layout-container');
+if (layoutElement && window.ResizeObserver) {
+  const resizeObserver = new ResizeObserver(updateLayoutSize);
+  resizeObserver.observe(layoutElement);
+  console.log("ResizeObserver attached.");
+} else {
+  console.warn("ResizeObserver not supported or layout container not found. Falling back to window resize.");
+  window.addEventListener('resize', updateLayoutSize);
+}
+
+// Also handle tab visibility changes
+document.addEventListener("visibilitychange", () => {
+    if (!document.hidden && layout?.isInitialised) {
+        console.log("Tab became visible, updating size.");
+        // Delay slightly to allow rendering engine
+        setTimeout(() => layout.updateSize(), 100);
+    }
+});
+
+</script>
+{% endblock %}

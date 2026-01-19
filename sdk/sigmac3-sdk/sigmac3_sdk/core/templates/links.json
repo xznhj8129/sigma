@@ -1,0 +1,105 @@
+[
+  {
+    "template_id": "ELRS_915",
+    "template_type": "link",
+    "uuid": "",
+    "name": "ELRS_915",
+    "link_type": "data",
+    "net_type": "pair",
+    "io": 0,
+    "data_type": "lora",
+    "rxtx": "",
+    "bands": {
+      "915M-ISM": 915
+    },
+    "waveform": "lora",
+    "ch": [],
+    "freq_set": -1,
+    "ch_set": -1,
+    "crypto_type": [],
+    "crypto_set": [],
+    "crypto_keys": {},
+    "net_set": "",
+    "ip": ""
+  },
+  {
+    "template_id": "UV5R",
+    "template_type": "link",
+    "uuid": "",
+    "name": "BAOFENG_UV5R",
+    "link_type": "audio",
+    "net_type": "broadcast",
+    "io": 1,
+    "data_type": "analog",
+    "rxtx": "",
+    "bands": {
+      "VHF": [
+        136,
+        174
+      ],
+      "UHF": [
+        400,
+        520
+      ]
+    },
+    "waveform": "fm_voice",
+    "ch": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "freq_set": 462.585,
+    "ch_set": 1,
+    "crypto_type": [],
+    "crypto_set": [],
+    "crypto_keys": {},
+    "net_set": "",
+    "ip": ""
+  },
+  {
+    "template_id": "FPV_ANALOG",
+    "template_type": "link",
+    "uuid": "",
+    "name": "FPV_ANALOG",
+    "link_type": "video",
+    "net_type": "broadcast",
+    "io": 0,
+    "data_type": "analog",
+    "rxtx": "",
+    "bands": {
+      "SHF": [
+        5500,
+        5900
+      ]
+    },
+    "waveform": "NTSC",
+    "bandwidth": {},
+    "speed": {},
+    "user_capacity": {
+      "rx": -1,
+      "tx": 1
+    },
+    "ch": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "freq_set": 5850,
+    "ch_set": 1,
+    "crypto_type": [],
+    "crypto_set": [],
+    "crypto_keys": {},
+    "net_set": "",
+    "ip": ""
+  }
+]

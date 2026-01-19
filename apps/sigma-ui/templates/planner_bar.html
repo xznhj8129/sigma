@@ -1,0 +1,64 @@
+
+<!-- Tabs Navigation -->
+<ul class="nav nav-pills" id="actionBarTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="inputs-tab" data-bs-toggle="tab" data-bs-target="#inputs" type="button" role="tab" aria-controls="inputs" aria-selected="true">Plan</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="actions-tab" data-bs-toggle="tab" data-bs-target="#actions" type="button" role="tab" aria-controls="actions" aria-selected="false">Actions</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings" type="button" role="tab" aria-controls="settings" aria-selected="false">Settings</button>
+    </li>
+</ul>
+<!-- Tabs Content -->
+<div class="tab-content" id="actionBarTabsContent">
+    <!-- Inputs Tab -->
+    <div class="tab-pane fade show active" id="inputs" role="tabpanel" aria-labelledby="inputs-tab">
+
+        <h6>UID: {{uid}}</h6>
+        <div class="mb-3">
+            <label for="textInput" class="form-label">Mission Name</label>
+            <input type="text" id="textInput" class="form-control" value="Default Text">
+        </div>
+        <!-- Insert Date selection-->
+        <!-- Insert Time selection-->
+        <button id="newplan" onclick="newplan()" class="btn btn-success">New Plan</button>
+        <button id="loadplan" onclick="loadplan()" class="btn btn-success">Load Plan</button>
+        <button id="loadtgts" onclick="loadtargets()" class="btn btn-success">Load Points</button>
+        <div class="mb-3">
+            <label for="missiontypemenu" class="form-label"><b>Mission Type</b></label>
+            <select id="missiontypemenu" class="form-select">
+                <option value="survey_point" selected>Survey Points</option>
+                <option value="survey_area">Survey Areas</option>
+                <option value="one_way">Transport to Point</option>
+            </select>
+        </div>
+
+    </div>
+    <!-- Actions Tab -->
+    <div class="tab-pane fade" id="actions" role="tabpanel" aria-labelledby="actions-tab">
+
+        <button id="set-points-home" onclick="setMode('home')" class="btn btn-primary">Set Home</button>
+        <button id="set-points-route-in" onclick="setMode('route_in')" class="btn btn-primary">Route In</button>
+        <button id="set-points-survey" onclick="setMode('survey')" class="btn btn-primary">Set Survey</button>
+        <button id="set-points-survey-area" onclick="setMode('survey-area')" class="btn btn-primary">Set Survey Area</button>
+        <button id="set-points-route-out" onclick="setMode('route_out')" class="btn btn-primary">Route Out</button>
+        <button id="set-points-land" onclick="setMode('land')" class="btn btn-primary">Set LZ</button>
+        <button onclick="undoLast()" class="btn btn-secondary">Undo Last</button>
+        <button onclick="clearAll()" class="btn btn-secondary">Clear All</button>
+        <button onclick="save()" class="btn btn-success">Save</button>
+        <button onclick="generate()" class="btn btn-success">Generate</button>
+
+    </div>
+    <!-- Settings Tab-->
+    <div class="tab-pane fade" id="settings" role="tabpanel" aria-labelledby="settings-tab">
+
+        <div class="mb-3">
+            <label for="textInput" class="form-label">Mission Name</label>
+            <input type="text" id="textInput2" class="form-control" value="Default Text">
+        </div>
+
+    </div>
+
+</div>

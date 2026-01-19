@@ -1,0 +1,463 @@
+[
+  {
+    "template_id": "COMB_BTN",
+    "template_type": "ground_org",
+    "category": "COMB",
+    "size": "BTN",
+    "sizelevel": 6,
+    "taskforce": true,
+    "tac_e_comp": {
+      "MECH_COY": 2,
+      "ARM_COY": 1
+    },
+    "sup_e_comp": {
+      "MORT_PLT": 1,
+      "ART_PLT": 1,
+      "MRL_PLT": 1,
+      "UAV_PLT": 1,
+      "HQ_SEC": 1
+    },
+    "links": {},
+    "equipment": {},
+    "personnel": 20,
+    "infantry": 0,
+    "vehicles": {
+      "APC": 2,
+      "TRUCK": 4
+    },
+    "air_units": {},
+    "spacing": 1000,
+    "ammo": {},
+    "weapons": {},
+    "sidc": "S*GPUCIZ--BF"
+  },
+  {
+    "template_id": "MECH_COY",
+    "template_type": "ground_org",
+    "category": "MECH",
+    "size": "COY",
+    "sizelevel": 5,
+    "tac_e_comp": {
+      "MECH_PLT": 3
+    },
+    "sup_e_comp": {},
+    "links": {},
+    "equipment": {},
+    "personnel": 10,
+    "infantry": 0,
+    "vehicles": {
+      "APC": 2
+    },
+    "air_units": {},
+    "spacing": 1000,
+    "ammo": {},
+    "weapons": {},
+    "sidc": "S*GPUCIZ--AE",
+    "taskforce": false
+  },
+  {
+    "template_id": "MECH_PLT",
+    "template_type": "ground_org",
+    "category": "MECH",
+    "size": "PLT",
+    "sizelevel": 4,
+    "tac_e_comp": {
+      "MECH_SEC": 3
+    },
+    "sup_e_comp": {},
+    "links": {},
+    "equipment": {},
+    "personnel": 4,
+    "infantry": 0,
+    "vehicles": {
+      "IFV": 1
+    },
+    "air_units": {},
+    "spacing": 250,
+    "ammo": {},
+    "weapons": {},
+    "sidc": "S*GPUCIZ--AD",
+    "taskforce": false
+  },
+  {
+    "template_id": "MECH_SEC",
+    "template_type": "ground_org",
+    "category": "MECH",
+    "size": "SEC",
+    "sizelevel": 3,
+    "tac_e_comp": {},
+    "sup_e_comp": {},
+    "links": {},
+    "equipment": {},
+    "personnel": 2,
+    "infantry": 8,
+    "vehicles": {
+      "IFV": 1
+    },
+    "air_units": {},
+    "spacing": 100,
+    "ammo": {},
+    "weapons": {},
+    "sidc": "S*GPUCIZ---C",
+    "taskforce": false
+  },
+  {
+    "template_id": "ARM_COY",
+    "template_type": "ground_org",
+    "category": "ARM",
+    "size": "COY",
+    "sizelevel": 5,
+    "tac_e_comp": {
+      "ARM_PLT": 3
+    },
+    "sup_e_comp": {},
+    "links": {},
+    "equipment": {},
+    "personnel": 10,
+    "infantry": 0,
+    "vehicles": {
+      "IFV": 2
+    },
+    "air_units": {},
+    "spacing": 1000,
+    "ammo": {},
+    "weapons": {},
+    "sidc": "S*GPUCA---AE",
+    "taskforce": false
+  },
+  {
+    "template_id": "ARM_PLT",
+    "template_type": "ground_org",
+    "category": "ARM",
+    "size": "PLT",
+    "sizelevel": 4,
+    "tac_e_comp": {
+      "ARM_SEC": 3
+    },
+    "sup_e_comp": {},
+    "links": {},
+    "equipment": {},
+    "personnel": 3,
+    "infantry": 0,
+    "vehicles": {
+      "MBT": 1
+    },
+    "air_units": {},
+    "spacing": 250,
+    "ammo": {},
+    "weapons": {},
+    "sidc": "S*GPUCA---AD",
+    "taskforce": false
+  },
+  {
+    "template_id": "ARM_SEC",
+    "template_type": "ground_org",
+    "category": "ARM",
+    "size": "SEC",
+    "sizelevel": 3,
+    "tac_e_comp": {},
+    "sup_e_comp": {},
+    "links": {},
+    "equipment": {},
+    "personnel": 3,
+    "infantry": 0,
+    "vehicles": {
+      "MBT": 1
+    },
+    "air_units": {},
+    "spacing": 100,
+    "ammo": {},
+    "weapons": {},
+    "sidc": "S*GPUCA----C",
+    "taskforce": false
+  },
+  {
+    "template_id": "MORT_PLT",
+    "template_type": "ground_org",
+    "category": "MORT",
+    "size": "PLT",
+    "sizelevel": 4,
+    "tac_e_comp": {
+      "MORT_SEC": 3
+    },
+    "sup_e_comp": {},
+    "links": {},
+    "equipment": {},
+    "personnel": 4,
+    "infantry": 0,
+    "vehicles": {
+      "JEEP": 1
+    },
+    "air_units": {},
+    "spacing": 250,
+    "ammo": {},
+    "weapons": {},
+    "sidc": "S*GPUCFMT--D",
+    "taskforce": false
+  },
+  {
+    "template_id": "MORT_SEC",
+    "template_type": "ground_org",
+    "category": "MORT",
+    "size": "SEC",
+    "sizelevel": 3,
+    "tac_e_comp": {},
+    "sup_e_comp": {},
+    "links": {},
+    "equipment": {},
+    "personnel": 12,
+    "infantry": 0,
+    "vehicles": {
+      "JEEP": 4
+    },
+    "air_units": {},
+    "spacing": 250,
+    "ammo": {
+      "SHELL_MORT_120MM_HE": 30
+    },
+    "weapons": {
+      "MORTAR_120MM": 4
+    },
+    "sidc": "S*GPUCFMT--C",
+    "taskforce": false
+  },
+  {
+    "template_id": "ART_PLT",
+    "template_type": "ground_org",
+    "category": "ART",
+    "size": "PLT",
+    "sizelevel": 4,
+    "tac_e_comp": {
+      "ART_SEC": 4
+    },
+    "sup_e_comp": {},
+    "links": {},
+    "equipment": {},
+    "personnel": 4,
+    "infantry": 0,
+    "vehicles": {
+      "JEEP": 1,
+      "TRUCK": 2
+    },
+    "air_units": {},
+    "spacing": 500,
+    "ammo": {},
+    "weapons": {},
+    "sidc": "S*GPUCFMT--D",
+    "taskforce": false
+  },
+  {
+    "template_id": "ART_SEC",
+    "template_type": "ground_org",
+    "category": "ART",
+    "size": "SEC",
+    "sizelevel": 3,
+    "tac_e_comp": {},
+    "sup_e_comp": {},
+    "links": {},
+    "equipment": {},
+    "personnel": 12,
+    "infantry": 0,
+    "vehicles": {
+      "JEEP": 2,
+      "TRUCK": 2
+    },
+    "air_units": {},
+    "spacing": 250,
+    "ammo": {
+      "SHELL_ART_155MM_HE": 30
+    },
+    "weapons": {
+      "HOWITZER_155MM": 1
+    },
+    "sidc": "S*GPUCFMT--C",
+    "taskforce": false
+  },
+  {
+    "template_id": "MRL_PLT",
+    "template_type": "ground_org",
+    "category": "MRL",
+    "size": "PLT",
+    "sizelevel": 4,
+    "tac_e_comp": {
+      "MRL_SEC": 3
+    },
+    "sup_e_comp": {},
+    "links": {},
+    "equipment": {},
+    "personnel": 4,
+    "infantry": 0,
+    "vehicles": {
+      "JEEP": 1,
+      "TRUCK": 2
+    },
+    "air_units": {},
+    "spacing": 500,
+    "ammo": {},
+    "weapons": {},
+    "sidc": "S*GPUCFRMS-D",
+    "taskforce": false
+  },
+  {
+    "template_id": "MRL_SEC",
+    "template_type": "ground_org",
+    "category": "MRL",
+    "size": "SEC",
+    "sizelevel": 3,
+    "tac_e_comp": {},
+    "sup_e_comp": {},
+    "links": {},
+    "equipment": {},
+    "personnel": 12,
+    "infantry": 0,
+    "vehicles": {
+      "BM21": 3,
+      "TRUCK": 2
+    },
+    "air_units": {},
+    "spacing": 250,
+    "ammo": {
+      "ROCKET_BM21_HE": 120
+    },
+    "weapons": {
+      "BM21_MRL": 3
+    },
+    "sidc": "S*GPUCFRMS-C",
+    "taskforce": false
+  },
+  {
+    "template_id": "HQ_SEC",
+    "template_type": "ground_org",
+    "category": "HQ",
+    "size": "SEC",
+    "sizelevel": 3,
+    "tac_e_comp": {},
+    "sup_e_comp": {},
+    "links": {},
+    "equipment": {},
+    "personnel": 12,
+    "infantry": 0,
+    "vehicles": {
+      "JEEP": 4
+    },
+    "air_units": {},
+    "spacing": 100,
+    "ammo": {},
+    "weapons": {},
+    "sidc": "S*GPUCFMT--C",
+    "taskforce": false
+  },
+  {
+    "template_id": "UAV_PLT",
+    "template_type": "ground_org",
+    "category": "UAV",
+    "size": "PLT",
+    "sizelevel": 4,
+    "tac_e_comp": {
+      "UAVA_SQD": 3
+    },
+    "sup_e_comp": {
+      "UAVR_SEC": 2
+    },
+    "links": {},
+    "equipment": {
+      "Radio": 1
+    },
+    "personnel": 3,
+    "infantry": 0,
+    "vehicles": {
+      "JEEP": 1
+    },
+    "air_units": {},
+    "spacing": 500,
+    "ammo": {},
+    "weapons": {},
+    "sidc": "SFGPUCVU---B",
+    "taskforce": false
+  },
+  {
+    "template_id": "UAVR_SEC",
+    "template_type": "ground_org",
+    "category": "UAVR",
+    "size": "SEC",
+    "sizelevel": 3,
+    "tac_e_comp": {},
+    "sup_e_comp": {},
+    "links": {
+      "DJI_O3+": 2
+    },
+    "equipment": {},
+    "personnel": 5,
+    "infantry": 0,
+    "vehicles": {
+      "JEEP": 1
+    },
+    "air_units": {
+      "UAVR_MAVIC3": 4
+    },
+    "spacing": 500,
+    "ammo": {},
+    "weapons": {},
+    "sidc": "S*GPUCVUR--C",
+    "taskforce": false
+  },
+  {
+    "template_id": "UAVA_SQD",
+    "template_type": "ground_org",
+    "category": "UAVA",
+    "size": "SQD",
+    "sizelevel": 2,
+    "tac_e_comp": {
+      "UAVA_TEM": 3
+    },
+    "sup_e_comp": {},
+    "links": {},
+    "equipment": {
+      "Radio": 1
+    },
+    "personnel": 3,
+    "infantry": 0,
+    "vehicles": {
+      "JEEP": 1
+    },
+    "air_units": {},
+    "spacing": 500,
+    "ammo": {},
+    "weapons": {},
+    "sidc": "SFGPUCVU---B",
+    "taskforce": false
+  },
+  {
+    "template_id": "UAVA_TEM",
+    "template_type": "ground_org",
+    "category": "UAVA",
+    "size": "TEM",
+    "sizelevel": 1,
+    "tac_e_comp": {},
+    "sup_e_comp": {},
+    "links": {
+      "BAOFENG_T": 4,
+      "BAOFENG_S": 1,
+      "ELRS_915": 2,
+      "FPV_ANALOG": 2
+    },
+    "equipment": {
+      "UV5R": 4,
+      "FPV_Goggles": 2,
+      "TX12S": 2
+    },
+    "personnel": 3,
+    "infantry": 0,
+    "vehicles": {
+      "JEEP": 1
+    },
+    "air_units": {
+      "UAVA_MK4V210": 6
+    },
+    "spacing": 500,
+    "ammo": {},
+    "weapons": {},
+    "sidc": "SFGPUCVU---A",
+    "taskforce": false
+  }
+]

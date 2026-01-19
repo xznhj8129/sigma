@@ -1,0 +1,7 @@
+{
+  "host": "127.0.0.1",
+  "port": 5001,
+  "db_dir": "apps/sigma-db/database",
+  "allowed_dbs": ["units", "command", "intel", "tasks", "tak"],
+  "auth_token": null
+}

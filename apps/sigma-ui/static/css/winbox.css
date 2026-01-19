@@ -1,0 +1,36 @@
+.winbox {
+    border-radius: 10px;
+    border: 1px solid #444 !important;
+    box-shadow: none;
+}
+
+.winbox .wb-title {
+    font-weight: 500;
+    color: #ccc;
+}
+
+.winbox .wb-body {
+    background-color: #121212;
+    color: #eee;
+    top: 20px;
+}
+
+
+.winbox .wb-header {
+    height: 20px;
+    line-height: 20px;
+}
+
+.winbox .wb-min {
+    background-size: 8px auto;
+}
+.winbox .wb-max {
+    background-size: 8px auto;
+}
+.winbox .wb-full {
+    background-size: 8px auto;
+}
+.winbox .wb-close {
+    background-size: 8px auto;
+}
+

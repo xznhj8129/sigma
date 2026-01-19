@@ -1,0 +1,37 @@
+atak:
+  listen: "0.0.0.0:4242"
+  multicast: "239.2.3.1:4242"
+  tcp_listen: "0.0.0.0:8088"
+  tcp_connect: "127.0.0.1:8087"
+  targets:
+    - "239.2.3.1:4242"
+    - "127.0.0.1:8087"
+
+sigma:
+  base_url: "http://127.0.0.1:5001/api"
+  auth_token: null
+  push_db: "intel"
+  pull_dbs: []
+
+adapter:
+  poll_interval: 2.0
+  stale_seconds: 60
+  default_ce: 50.0
+  default_le: 50.0
+  self_callsign: "SIGMA"
+  self_cottype: "a-f-U"
+  min_write_interval: 1.5
+  loopback_ttl: 5.0
+  tak_db: "tak"
+  self_position:
+    lat: 0.0
+    lon: 0.0
+    alt: 0.0
+    ce: 25.0
+    le: 25.0
+  self_beacon_interval: 30.0
+  self_uid: "SIGMA-HUB"
+
+takserver:
+  host: "127.0.0.1"
+  port: 8087

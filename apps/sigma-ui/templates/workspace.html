@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block head %}
+{% endblock %}
+
+{% block content %}
+<div id="taskbar" class="bg-dark text-light d-flex align-items-center p-2" style="position:fixed; top:0; width:100%; height:40px; border-bottom:1px solid #444;">
+    <div class="dropdown">
+        <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            ☰ Start
+        </button>
+        <ul class="dropdown-menu dropdown-menu-dark">
+            <li><button class="dropdown-item" onclick="openWindow('Map', '/map2')">Map</button></li>
+            <li><button class="dropdown-item" onclick="openWindow('Planner', '/planner')">Mission Planning</button></li>
+            <li><button class="dropdown-item" onclick="openWindow('Viewer', '/image')">Viewer</button></li>
+            <li><button class="dropdown-item" onclick="openWindow('Imagery Analysis', '/imagery_map')">Imagery Analysis</button></li>
+            <li><button class="dropdown-item" onclick="openWindow('Chat', '/chat')">Chat</button></li>
+            <li><button class="dropdown-item" onclick="openWindow('Test', '/test')">Test</button></li>
+        </ul>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function openWindow(title, url) {
+        new WinBox({
+            title: title,
+            url: url,
+            width: "50%",
+            height: "50%",
+            x: "center",
+            y: "center",
+            background: "#111"
+        });
+    }
+</script>
+{% endblock %}

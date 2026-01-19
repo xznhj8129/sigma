@@ -1,0 +1,9 @@
+-e ../../sdk/sigmac3-sdk
+pandas
+numpy
+requests
+xmltodict
+pytz
+pyyaml
+xmltodict
+pytz

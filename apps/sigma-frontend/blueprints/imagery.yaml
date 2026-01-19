@@ -1,0 +1,10 @@
+id: imagery
+title: Imagery Analysis
+component: ImageryWorkbench
+description: Placeholder imagery analysis workbench ready for annotation tools.
+dimensions:
+  width: "50%"
+  height: "50%"
+position:
+  x: center
+  y: center

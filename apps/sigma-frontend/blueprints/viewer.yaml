@@ -1,0 +1,10 @@
+id: viewer
+title: Viewer
+component: MediaViewer
+description: Flexible viewer shell for images and live video feeds.
+dimensions:
+  width: "50%"
+  height: "50%"
+position:
+  x: center
+  y: center

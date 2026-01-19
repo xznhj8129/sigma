@@ -1,0 +1,10 @@
+id: test
+title: GoldenLayout Test
+component: GoldenLayoutTest
+description: Sandbox window that mirrors the legacy GoldenLayout test template.
+dimensions:
+  width: "50%"
+  height: "50%"
+position:
+  x: center
+  y: center

@@ -1,0 +1,10 @@
+id: map
+title: Map Viewer
+component: MapViewport
+description: Base map visualization shell for future layers and overlays.
+dimensions:
+  width: "50%"
+  height: "50%"
+position:
+  x: center
+  y: center

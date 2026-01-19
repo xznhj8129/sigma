@@ -1,0 +1,273 @@
+{% extends "base.html" %}
+{% block title %}WebRTC Video{% endblock %}
+
+{% block head %}
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: black;
+    overflow: hidden;
+  }
+
+  #video-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 1px;
+    gap: 2px;
+    background: black;
+    box-sizing: border-box;
+  }
+
+  #video-wrapper {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: black;
+    touch-action: none;
+  }
+
+  video, canvas {
+    max-width: 100%;
+    max-height: 100%;
+    height: auto;
+    width: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    object-fit: contain;
+  }
+
+  #controls-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    background: #1e1e1e;
+    padding: 6px 10px;
+    border-radius: 6px;
+  }
+
+  #control-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  #zoomLabel, #timeDisplay {
+    font-family: monospace;
+    font-size: 14px;
+    color: #ccc;
+    margin: 0;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="video-container">
+  <div id="video-wrapper">
+    <video id="video" autoplay muted playsinline controls></video>
+    <canvas id="overlay"></canvas>
+  </div>
+
+  <div id="controls-bar">
+    <div id="control-buttons">
+      <button class="btn btn-sm btn-secondary" id="markBtn">Mark</button>
+      <span id="zoomLabel">Zoom: 1.00×</span>
+    </div>
+    <span id="timeDisplay">00:00 / 00:00</span>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const video = document.getElementById("video");
+    const canvas = document.getElementById("overlay");
+    const ctx = canvas.getContext("2d");
+    
+    const markBtn = document.getElementById("markBtn");
+    const zoomLabel = document.getElementById("zoomLabel");
+    const timeDisplay = document.getElementById("timeDisplay");
+    
+    let zoom = 1.0;
+    let panX = 0.5;
+    let panY = 0.5;
+    let dragging = false;
+    let lastClick = null;
+    let startX = 0, startY = 0, originX = 0, originY = 0;
+    
+    // 🔌 WebRTC connection
+    async function negotiateWebRTC() {
+      const pc = new RTCPeerConnection();
+      pc.addTransceiver('video', { direction: 'recvonly' });
+    
+      pc.ontrack = (event) => {
+        video.srcObject = event.streams[0];
+        video.play().catch(err => console.error('play() error:', err));
+      };
+    
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+    
+      const response = await fetch("http://localhost:8081/offer", {
+        method: "POST",
+        body: JSON.stringify(pc.localDescription),
+        headers: { "Content-Type": "application/json" }
+      });
+    
+      const answer = await response.json();
+      await pc.setRemoteDescription(answer);
+    }
+    negotiateWebRTC();
+    
+    // 🖱 Drag Pan
+    canvas.addEventListener("mousedown", e => {
+      dragging = true;
+      startX = e.clientX;
+      startY = e.clientY;
+      originX = panX;
+      originY = panY;
+    });
+    canvas.addEventListener("touchstart", e => {
+      if (e.touches.length === 1) {
+        dragging = true;
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+        originX = panX;
+        originY = panY;
+      }
+    }, { passive: false });
+    
+    window.addEventListener("mouseup", () => dragging = false);
+    window.addEventListener("touchend", () => dragging = false);
+    
+    window.addEventListener("mousemove", e => {
+      if (!dragging) return;
+      const dx = (e.clientX - startX) / canvas.clientWidth;
+      const dy = (e.clientY - startY) / canvas.clientHeight;
+      panX = originX - dx / zoom;
+      panY = originY - dy / zoom;
+    });
+    window.addEventListener("touchmove", e => {
+      if (!dragging || e.touches.length !== 1) return;
+      const dx = (e.touches[0].clientX - startX) / canvas.clientWidth;
+      const dy = (e.touches[0].clientY - startY) / canvas.clientHeight;
+      panX = originX - dx / zoom;
+      panY = originY - dy / zoom;
+    }, { passive: false });
+    
+    // 🔍 Zoom
+    canvas.addEventListener("wheel", e => {
+      e.preventDefault();
+      const rect = canvas.getBoundingClientRect();
+      const cx = (e.clientX - rect.left) / rect.width;
+      const cy = (e.clientY - rect.top) / rect.height;
+      const factor = e.deltaY < 0 ? 1.1 : 0.9;
+      const newZoom = Math.max(1.0, zoom * factor);
+      panX += (cx - 0.5) * (1 / zoom - 1 / newZoom);
+      panY += (cy - 0.5) * (1 / zoom - 1 / newZoom);
+      zoom = newZoom;
+      zoomLabel.textContent = `Zoom: ${zoom.toFixed(2)}×`;
+    });
+    
+    // 🖱 Click to mark
+    canvas.addEventListener("click", e => {
+      const vw = video.videoWidth;
+      const vh = video.videoHeight;
+      const cropW = vw / zoom;
+      const cropH = vh / zoom;
+      let cropX = panX * vw - cropW / 2;
+      let cropY = panY * vh - cropH / 2;
+      cropX = Math.max(0, Math.min(cropX, vw - cropW));
+      cropY = Math.max(0, Math.min(cropY, vh - cropH));
+    
+      const rect = canvas.getBoundingClientRect();
+      const relX = (e.clientX - rect.left) / rect.width;
+      const relY = (e.clientY - rect.top) / rect.height;
+      const imgX = cropX + relX * cropW;
+      const imgY = cropY + relY * cropH;
+      lastClick = { x: imgX, y: imgY };
+      console.log(`Marked: ${imgX.toFixed(1)}, ${imgY.toFixed(1)}`);
+    });
+    
+    // 📤 Submit marker to API
+    markBtn.onclick = () => {
+      if (!lastClick) return alert("No marker placed");
+      const payload = {
+        video_id: "demo-video-stream",
+        time: video.currentTime,
+        x: lastClick.x,
+        y: lastClick.y
+      };
+      fetch("/api/mark", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      })
+      .then(res => res.json())
+      .then(data => console.log("📌 Mark sent:", data));
+    };
+    
+    // ⏱ Update timestamp
+    video.addEventListener("timeupdate", () => {
+      const t = video.currentTime;
+      const d = video.duration;
+      const format = s => isFinite(s) ? `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(Math.floor(s % 60)).padStart(2, '0')}` : "LIVE";
+      timeDisplay.textContent = `${format(t)} / ${format(d)}`;
+    });
+    
+    // 🖼 Draw loop with safe cropping
+    function draw() {
+      if (video.readyState >= 2) {
+        const vw = video.videoWidth;
+        const vh = video.videoHeight;
+    
+        const bounds = video.getBoundingClientRect();
+        canvas.width = bounds.width;
+        canvas.height = bounds.height;
+    
+        const cw = canvas.width;
+        const ch = canvas.height;
+    
+        const cropW = vw / zoom;
+        const cropH = vh / zoom;
+        let cropX = panX * vw - cropW / 2;
+        let cropY = panY * vh - cropH / 2;
+        cropX = Math.max(0, Math.min(cropX, vw - cropW));
+        cropY = Math.max(0, Math.min(cropY, vh - cropH));
+    
+        // Clamp pan to video
+        panX = Math.max(cropW / 2 / vw, Math.min(1 - cropW / 2 / vw, panX));
+        panY = Math.max(cropH / 2 / vh, Math.min(1 - cropH / 2 / vh, panY));
+    
+        ctx.clearRect(0, 0, cw, ch);
+        ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(video, cropX, cropY, cropW, cropH, 0, 0, cw, ch);
+    
+        if (lastClick) {
+          const relX = (lastClick.x - cropX) / cropW;
+          const relY = (lastClick.y - cropY) / cropH;
+          const x = relX * cw;
+          const y = relY * ch;
+          ctx.strokeStyle = "white";
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(x - 10, y);
+          ctx.lineTo(x + 10, y);
+          ctx.moveTo(x, y - 10);
+          ctx.lineTo(x, y + 10);
+          ctx.stroke();
+        }
+      }
+    
+      requestAnimationFrame(draw);
+    }
+    requestAnimationFrame(draw);
+    </script>
+    
+{% endblock %}

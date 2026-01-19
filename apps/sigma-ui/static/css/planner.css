@@ -1,0 +1,199 @@
+/* Reset and Structural Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body, #main-container {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
+/* Main Layout - Permanent Left Sidebar */
+#main-container {
+    display: flex;
+    height: 100%;
+    width: 100%;
+}
+
+/* Sidebar - Fixed on Left */
+#action-bar {
+    max-width: 225px;
+    width: 230px;
+    background-color: #1e1e1e;
+    overflow-y: auto;
+    padding: 4px;
+    border-right: 1px solid #444;
+    height: 100%;
+    position: relative;
+    z-index: 1000;
+    flex-shrink: 0; /* Prevent shrinking */
+}
+
+/* Map Container - Takes remaining space */
+#map {
+    flex: 1;
+    min-width: 0; /* Fix flexbox overflow issue */
+    height: 100%;
+}
+
+/* Nav Pills - Compact Dark Style */
+.nav.nav-pills {
+    --bs-nav-pills-border-radius: 4px;
+    --bs-nav-pills-link-padding-x: 0.75rem;
+    --bs-nav-pills-link-padding-y: 0.25rem;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #444;
+    padding-bottom: 8px;
+}
+
+.nav.nav-pills .nav-item {
+    margin-right: 4px;
+}
+
+.nav.nav-pills .nav-link {
+    font-size: 0.8rem;
+    padding: 4px 12px;
+    color: #aaa;
+    background-color: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.nav.nav-pills .nav-link:hover {
+    color: #e0e0e0;
+    background-color: #2a2a2a;
+    border-color: #444;
+}
+
+.nav.nav-pills .nav-link.active {
+    color: white;
+    background-color: #2d6a4f;
+    border-color: #4c956c;
+    font-weight: 500;
+}
+
+/* Tab Content */
+.tab-content {
+    padding: 8px 0;
+}
+
+.tab-pane {
+    font-size: 0.85rem;
+}
+
+/* Button Overrides - Compact Styles */
+.btn {
+    width: 100%;
+    margin-bottom: 4px;
+    padding: 4px 8px;
+    font-size: 0.85rem;
+    line-height: 1;
+    min-height: 24px;
+}
+
+.btn-sm {
+    padding: 2px 6px;
+    font-size: 0.8rem;
+}
+
+.btn-lg {
+    padding: 6px 12px;
+    font-size: 0.9rem;
+}
+
+.active-button {
+    background-color: #2d6a4f !important;
+    color: white !important;
+    border-color: #4c956c !important;
+    box-shadow: 0 0 0 2px rgba(46, 139, 87, 0.3) !important;
+}
+
+/* Form Controls */
+.input-group {
+    margin-bottom: 12px;
+}
+
+.input-group .form-control,
+.input-group .form-select {
+    font-size: 0.85rem;
+    padding: 4px 8px;
+    height: auto;
+}
+
+/* Custom Icons */
+.custom-div-icon i {
+    font-size: 22px;
+}
+
+/* Leaflet Controls - Dark Theme */
+.leaflet-control {
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+    font-size: 0.85rem;
+}
+
+.leaflet-control-attribution {
+    background-color: rgba(30, 30, 30, 0.7) !important;
+    padding: 2px 5px;
+    font-size: 0.75rem;
+}
+
+.leaflet-bar a {
+    width: 26px;
+    height: 26px;
+    line-height: 26px;
+    font-size: 1rem;
+}
+
+/* Compact Dropdown Items */
+.dropdown-item {
+    padding: 4px 12px;
+    font-size: 0.85rem;
+}
+
+/* Utility Classes */
+.planner-btn-group {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.planner-btn-group .btn {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+/* Mobile Adjustments (when window is narrow) */
+@media (max-width: 992px) {
+    
+    .nav.nav-pills .nav-link {
+        font-size: 0.75rem;
+        padding: 3px 8px;
+    }
+    
+    .btn {
+        padding: 3px 6px;
+        font-size: 0.8rem;
+    }
+}
+
+/* Very small screens (optional collapse) */
+@media (max-width: 576px) {
+    
+    .custom-div-icon i {
+        font-size: 28px;
+    }
+}
+
+#map {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    position: relative; /* Ensure proper stacking context */
+    pointer-events: auto; /* Explicitly enable clicks */
+    z-index: 10; /* Adjust if needed */
+}

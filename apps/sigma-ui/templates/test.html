@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}GoldenLayout Test{% endblock %}
+
+{% block head %}
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+  }
+</style>
+<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="https://golden-layout.com/assets/js/goldenlayout.min.js"></script>
+<link rel="stylesheet" href="https://golden-layout.com/assets/css/goldenlayout-base.css" />
+<link rel="stylesheet" href="https://golden-layout.com/assets/css/goldenlayout-dark-theme.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+{% endblock %}
+
+{% block content %}
+<div id="layout-container"></div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+
+var config = {
+  settings:[{
+    hasHeaders: false,
+  }],
+
+  content: [{
+    type: 'row',
+    content: [
+      {
+        type:'component',
+        componentName: 'example',
+        componentState: { text: 'Component 1' },
+        isClosable: false
+      },
+      {
+        type:'component',
+        componentName: 'example',
+        componentState: { text: 'Component 2' },
+        isClosable: false
+      },
+    ]
+  }]
+};
+
+var myLayout = new GoldenLayout( config );
+
+myLayout.registerComponent( 'example', function( container, state ){
+  container.getElement().html( '<h2>' + state.text + '</h2>');
+});
+
+myLayout.init();
+// Add a ResizeObserver to update GoldenLayout when the container is resized
+const layoutContainer = document.getElementById('layout-container');
+if (window.ResizeObserver) {
+  const resizeObserver = new ResizeObserver(() => {
+    myLayout.updateSize();
+  });
+  resizeObserver.observe(layoutContainer);
+} else {
+  window.addEventListener('resize', () => {
+    myLayout.updateSize();
+  });
+}
+
+</script>
+{% endblock %}

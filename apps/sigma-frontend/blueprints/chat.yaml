@@ -1,0 +1,10 @@
+id: chat
+title: Chat
+component: ChatConsole
+description: Message console placeholder for operator collaboration.
+dimensions:
+  width: "50%"
+  height: "50%"
+position:
+  x: center
+  y: center

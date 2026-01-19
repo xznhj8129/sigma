@@ -1,0 +1,30 @@
+{
+    "UAV1": {
+        "objtype": "uav",
+        "name": "UAV1",
+        "type": "UAVR",
+        "pos": {
+            "lat": 36.530310,
+            "lon": -83.21722,
+            "alt": 50
+        },
+        "dbid": "123456",
+        "heading": 0,
+        "pitch": 0,
+        "fov": [
+            0,
+            0
+        ],
+        "video_res": [
+            1280,
+            720
+        ],
+        "video_type": "rtsp",
+        "video_addr": "rtsp://localhost:8554/live/1",
+        "telem_type": "mavlink",
+        "telem_port": "/dev/ttyUSB0"
+    },
+    "files": {
+        "path": "apps/sigma-db/database/files"
+    }
+}

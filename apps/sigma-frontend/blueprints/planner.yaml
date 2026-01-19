@@ -1,0 +1,10 @@
+id: planner
+title: Mission Planning
+component: PlannerBoard
+description: Layout for mission planning timeline and waypoint editors.
+dimensions:
+  width: "50%"
+  height: "50%"
+position:
+  x: center
+  y: center

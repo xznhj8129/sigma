@@ -1,0 +1,10 @@
+sigmac3-sdk
+flask
+aiohttp
+aiohttp-middlewares
+aiortc
+opencv-python
+av
+requests
+tinydb
+exiftool

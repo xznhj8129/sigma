@@ -1,0 +1,311 @@
+[
+  {
+    "template_id": "UAVA_MK4V210",
+    "template_type": "air_unit",
+    "model": "MK4V2-10",
+    "type": "UAVA",
+    "serial_uid": "",
+    "sidc": "S*APMHA-----",
+    "cot": "a-.-A-M-H-A",
+    "propulsion": "electric",
+    "has_warhead": true,
+    "warhead": "PG7V",
+    "reusable": false,
+    "has_launchers": false,
+    "attack_modes": [
+      "kamikaze"
+    ],
+    "pylons": "",
+    "flight_type": "copter",
+    "launcher": "vtol",
+    "pylon_format": "",
+    "launch_domain": "all",
+    "effect_domain": "all",
+    "sensors": [
+      "FPV_ANALOG_CAM"
+    ],
+    "rc_link": "ELRS_915",
+    "vid_link": "FPV_ANALOG",
+    "ctrl_video_sep": true,
+    "ordnance": {},
+    "guidance": "fpv",
+    "navigation": "visual",
+    "navaids": [],
+    "autopilot": false,
+    "autopilot_model": "F405",
+    "autopilot_fw": {
+      "betaflight": 4.5
+    },
+    "control_modes": [],
+    "max_range": 10000,
+    "max_flight_t": 1200,
+    "max_spd": 50,
+    "max_alt": 2000,
+    "cruise_spd": 50,
+    "fuel_type": "batt",
+    "fuel_config": {
+      "6S2P-21700": 9000
+    },
+    "fuel_cons": {
+      "loaded": {
+        "flying": 30,
+        "hover": 15
+      }
+    },
+    "start_flight_time": 0,
+    "status": "",
+    "maint_status": {},
+    "weather_limits": {
+      "rain": 5,
+      "snow": 5,
+      "temp": [
+        -25,
+        50
+      ],
+      "wind": 50,
+      "vis": 1000
+    },
+    "ifr": false,
+    "roles": [
+      "G",
+      "AA"
+    ],
+    "links": {},
+    "weapons": {},
+    "ammo": {}
+  },
+  {
+    "template_id": "UAVR_MAVIC3",
+    "template_type": "air_unit",
+    "model": "DJI_MAVIC3",
+    "type": "UAVR",
+    "serial_uid": "",
+    "sidc": "S*APMHR-----",
+    "cot": "a-.-A-M-H-R",
+    "propulsion": "electric",
+    "reusable": true,
+    "has_warhead": false,
+    "warhead": "",
+    "has_launchers": true,
+    "attack_modes": [],
+    "pylons": "1KG_1X_DROPPER",
+    "flight_type": "copter",
+    "launcher": "vtol",
+    "pylon_format": "",
+    "launch_domain": "all",
+    "effect_domain": "all",
+    "sensors": [
+      "MAVIC3_CAMERA"
+    ],
+    "rc_link": "DJI_O3+",
+    "vid_link": "",
+    "ctrl_video_sep": false,
+    "ordnance": {},
+    "guidance": "optic",
+    "navigation": "",
+    "navaids": [
+      "GPS"
+    ],
+    "autopilot": true,
+    "autopilot_model": "DJI",
+    "autopilot_fw": {
+      "DJI": 0
+    },
+    "fuel_type": "batt",
+    "fuel_config": {
+      "MAVIC3_BATT": 5000
+    },
+    "fuel_cons": {
+      "unloaded": {
+        "flying": 10,
+        "hover": 5
+      }
+    },
+    "control_modes": [
+      "POSHOLD",
+      "RTH"
+    ],
+    "max_range": 15000,
+    "max_flight_t": 2400,
+    "max_spd": 40,
+    "cruise_spd": 50,
+    "max_alt": 2000,
+    "start_flight_time": 0,
+    "status": "",
+    "maint_status": {},
+    "weather_limits": {
+      "ifr": false,
+      "rain": 1,
+      "snow": 1,
+      "temp": [
+        -20,
+        50
+      ],
+      "wind": 40,
+      "vis": 1000,
+      "icing": false
+    },
+    "roles": [
+      "R",
+      "G"
+    ],
+    "links": {},
+    "weapons": {},
+    "ammo": {}
+  },
+  {
+    "template_id": "GENERIC_QUADCOPTER",
+    "template_type": "air_unit",
+    "model": "GENERIC_QUADCOPTER",
+    "type": "UAVR",
+    "serial_uid": "",
+    "sidc": "S*APMHR-----",
+    "cot": "a-.-A-M-H-R",
+    "propulsion": "electric",
+    "reusable": true,
+    "has_warhead": false,
+    "warhead": "",
+    "has_launchers": true,
+    "attack_modes": [],
+    "pylons": "",
+    "flight_type": "copter",
+    "launcher": "vtol",
+    "pylon_format": "",
+    "launch_domain": "all",
+    "effect_domain": "all",
+    "sensors": [
+      "FPV_ANALOG_CAM"
+    ],
+    "rc_link": "MAV_SIK_915",
+    "vid_link": "FPV_ANALOG",
+    "ctrl_video_sep": true,
+    "ordnance": {},
+    "guidance": "optic",
+    "navigation": "",
+    "navaids": [
+      "GPS"
+    ],
+    "autopilot": true,
+    "autopilot_model": "ARDUPILOT",
+    "autopilot_fw": {
+      "arducopter": 4.5
+    },
+    "fuel_type": "batt",
+    "fuel_config": {
+      "LIPO_4S": 5000
+    },
+    "fuel_cons": {
+      "unloaded": {
+        "flying": 10,
+        "hover": 5
+      }
+    },
+    "control_modes": [
+      "POSHOLD",
+      "RTH"
+    ],
+    "max_range": 5000,
+    "max_flight_t": 1200,
+    "max_spd": 40,
+    "cruise_spd": 50,
+    "max_alt": 2000,
+    "start_flight_time": 0,
+    "status": "present",
+    "maint_status": {},
+    "weather_limits": {
+      "ifr": false,
+      "rain": 1,
+      "snow": 1,
+      "temp": [
+        -20,
+        50
+      ],
+      "wind": 40,
+      "vis": 1000,
+      "icing": false
+    },
+    "roles": [
+      "R"
+    ],
+    "links": {},
+    "weapons": {},
+    "ammo": {}
+  },
+  {
+    "template_id": "GENERIC_FIXEDWING",
+    "template_type": "air_unit",
+    "model": "GENERIC_FIXEDWING",
+    "type": "UAVR",
+    "serial_uid": "",
+    "sidc": "S*APMHR-----",
+    "cot": "a-.-A-M-H-R",
+    "propulsion": "electric",
+    "reusable": true,
+    "has_warhead": false,
+    "warhead": "",
+    "has_launchers": false,
+    "attack_modes": [],
+    "pylons": "",
+    "flight_type": "plane",
+    "launcher": "runway",
+    "pylon_format": "",
+    "launch_domain": "all",
+    "effect_domain": "all",
+    "sensors": [
+      "FPV_ANALOG_CAM"
+    ],
+    "rc_link": "ELRS_915",
+    "vid_link": "FPV_ANALOG",
+    "ctrl_video_sep": true,
+    "ordnance": {},
+    "guidance": "optic",
+    "navigation": "",
+    "navaids": [
+      "GPS"
+    ],
+    "autopilot": true,
+    "autopilot_model": "INAV",
+    "autopilot_fw": {
+      "inav": 8.0
+    },
+    "fuel_type": "batt",
+    "fuel_config": {
+      "LIPO_4S": 10000
+    },
+    "fuel_cons": {
+      "unloaded": {
+        "flying": 10
+      }
+    },
+    "control_modes": [
+      "POSHOLD",
+      "RTH"
+    ],
+    "max_range": 50000,
+    "max_flight_t": 2400,
+    "max_spd": 40,
+    "cruise_spd": 50,
+    "max_alt": 4000,
+    "start_flight_time": 0,
+    "status": "",
+    "maint_status": {},
+    "weather_limits": {
+      "ifr": false,
+      "rain": 1,
+      "snow": 1,
+      "temp": [
+        -20,
+        50
+      ],
+      "wind": 40,
+      "vis": 1000,
+      "icing": false
+    },
+    "roles": [
+      "R"
+    ],
+    "links": {},
+    "weapons": {},
+    "ammo": {}
+  }
+]

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Waypoints Map{% endblock %}
+
+{% block head_extra %}
+    {{ super() }}
+    {{ map_head | safe }}
+{% endblock %}
+
+{% block content %}
+    {{ map_body | safe }}
+{% endblock %}
+
+{% block scripts_extra %}
+    {{ super() }}
+    {{ map_scripts | safe }}
+{% endblock %}

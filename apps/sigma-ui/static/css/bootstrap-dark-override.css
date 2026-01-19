@@ -1,0 +1,97 @@
+/* Base overrides */
+body {
+    background-color: #121212;
+    color: #e0e0e0;
+    font-family: "Segoe UI", sans-serif;
+}
+
+/* Bootstrap dark override */
+.bg-dark {
+    background-color: #1e1e1e !important;
+}
+
+.text-light {
+    color: #e0e0e0 !important;
+}
+
+.border,
+.border-top,
+.border-bottom,
+.border-start,
+.border-end {
+    border-color: #444 !important;
+}
+
+.dropdown-menu {
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+    border: 1px solid #333;
+}
+
+.dropdown-item {
+    color: #e0e0e0;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+    background-color: #333;
+    color: #fff;
+}
+
+/* Buttons */
+.btn {
+    border-radius: 6px;
+    border: 1px solid #444;
+    box-shadow: none !important;
+}
+
+.btn-secondary {
+    background-color: #2a2a2a;
+    border-color: #444;
+    color: #e0e0e0;
+}
+
+.btn-secondary:hover {
+    background-color: #444;
+    color: white;
+}
+
+/* Inputs / Forms */
+.form-control {
+    background-color: #181818;
+    color: #eee;
+    border: 1px solid #333;
+}
+
+.form-control:focus {
+    background-color: #202020;
+    color: white;
+    border-color: #555;
+    box-shadow: 0 0 0 0.1rem rgba(255, 255, 255, 0.1);
+}
+
+/* Navbars (optional) */
+.navbar,
+.navbar-dark {
+    background-color: #181818;
+    border-bottom: 1px solid #333;
+}
+
+/* Scrollbars (modern, clean) */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #777;
+}
